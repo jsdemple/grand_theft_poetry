@@ -3,9 +3,10 @@ import urllib.request
 import re
 import os
 import random
-ptg = []
+Stolen_Poem = []
+Stolen_Poem_cited = []
 
-file = open('poetry_urls.txt', 'r')
+file = open('poetry_urls_master.txt', 'r')
 urls = file.read()
 urls = (urls)
 #print (urls)
@@ -24,9 +25,10 @@ def grand_theft_poetry(num_lines):
         """poetryscraper"""
         content = urllib.request.urlopen(rand_url)
         soup = BeautifulSoup(content, 'html.parser')
-        poem = soup.find_all('div', {"style":"text-indent: -1em; padding-left: 1em;"})
+        poem = soup.find_all('div', {"style":"text-indent: -1em; padding-left: 1em;"}) #This is the div containing the poem
 
         line_list_HTML = []      #will be list of lines in poem including HTML as strings
+        
         for line in poem:
             #print (type(line))
             #print (line)
@@ -42,15 +44,22 @@ def grand_theft_poetry(num_lines):
             clean_lines.append(item)
             clean_lines = [i for i in clean_lines if i!= '']
         #print(clean_lines)  #print for testing only
-
         title = str(soup.title)
         title = title[7:-28]
         if len(clean_lines)>0:
             rand_line = random.choice(clean_lines)
         else:
-            print ("\n\n\n\nclean_lines empty\n\n\n\n")
-            rand_line = '*********ERROR**********\nclean_lines empty'
-        if rand_line !=('' or ' '):
+            #print ("\nclean_lines empty\n")
+            #rand_line = '*********ERROR**********\nclean_lines empty'
+            title = []
+            rand_line = []
+        if (rand_line !=('' or ' ')) and (rand_line != []):
             print (rand_line)
-        ptg.append(rand_line)
-        
+            Stolen_Poem.append(rand_line)
+            Stolen_Poem_cited.append((rand_line, title))
+    Stolen_Poem.append(Stolen_Poem_cited)
+    gtp_file = open('GrandTheftPoem.txt', 'w')
+    gtp_file.write(str(Stolen_Poem))
+    gtp_file.close()
+    file.close() #close urls file
+    return Stolen_Poem_cited
